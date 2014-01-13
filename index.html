@@ -31,37 +31,119 @@
         <hr>
 
         <section id="main_content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+          <h1>
+<a name="minitest_vcr" class="anchor" href="#minitest_vcr"><span class="octicon octicon-link"></span></a>minitest_vcr</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<ul>
+<li><a href="http://mfpiccolo.github.io/minitest_vcr">Homepage</a></li>
+<li><a href="https://github.com/mfpiccolo/minitest_vcr/issues">Issues</a></li>
+<li><a href="http://rubydoc.info/gems/minitest_vcr/frames">Documentation</a></li>
+<li><a href="mailto:mfpiccolo@gmail.com">Email</a></li>
+</ul><h2>
+<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h2>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p>Allows VCR to automatically make cassets with proper file paths using Minitest.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<h2>
+<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+
+<p>Two main steps:</p>
+
+<ol>
+<li> Install and require the gem</li>
+<li> Add <code>MinitestVcr::Spec.configure!</code> before your tests load</li>
+</ol><p>The setup below will create a direcotry structre that looks like this:</p>
+
+<pre><code>|-- app_name
+|  |-- test/
+|    |-- cassettes/
+|      |-- Example_Spec/
+|        |-- an_example_group/
+|          |-- with_a_nested_example_group/
+|          `-- uses_a_cassette_for_an_example_group.yml
+|    `-- example_test.rb
+|    `-- test_helper.rb
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>An example test_helper file: app_name/test/test_helper.rb</p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<pre><code>require "minitest/autorun"
+require "minispec-metadata"
+require "vcr"
+require "minitest_vcr"
+require "webmock"
+require "mocha/setup"
+require "faraday"
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+VCR.configure do |c|
+  c.cassette_library_dir = 'test/cassettes'
+  c.hook_into :webmock
+end
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+MinitestVcr::Spec.configure!
+</code></pre>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p>An example test file: app_name/test/example_test.rb</p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<pre><code>require "test_helper"
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+describe Example::Spec do
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+  describe 'an example group', vcr: true do
+    describe 'with a nested example group' do
+      before do
+        conn = Faraday.new
+        @response = conn.get 'http://example.com'
+      end
+      it 'uses a cassette for any examples' do
+        @response.wont_equal nil
+      end
+    end
+  end
+end
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<div class="highlight highlight-ruby"><pre><span class="n">gem</span> <span class="s2">"minitest_vcr"</span>
+</pre></div>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install minitest_vcr
+</code></pre>
+
+<h2>
+<a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>Copyright</h2>
+
+<p>Copyright (c) 2013 Mike Piccolo</p>
+
+<p>See <a href="LICENSE.txt">LICENSE.txt</a> for details.</p>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li>Fork it ( <a href="http://github.com/">http://github.com/</a>/minitest_vcr/fork )</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
         </section>
 
         <footer>
